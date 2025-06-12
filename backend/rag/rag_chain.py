@@ -51,7 +51,7 @@ def build_rag_chain(model_name="llama3"):
                 "question": question,
                 "used_documents": [doc.page_content for doc in docs],
                 "iterations": results,
-                "final_answer": best_output or (results[-1]["answer"] if results else ""),
+                "final_answer": best_output,
                 "stream": generate_answer()
             }
 

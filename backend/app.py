@@ -3,9 +3,9 @@ import json
 from rag.rag_chain import build_rag_chain
 
 def main():
-    rag_chain = build_rag_chain()
 
-    output = rag_chain.invoke({"question": "how old is xander"})
+    rag_chain = build_rag_chain()
+    output = rag_chain.invoke({"question": "How old is Xander?"})
 
     previous_token = ""
     for token_chunk in output["stream"]:
