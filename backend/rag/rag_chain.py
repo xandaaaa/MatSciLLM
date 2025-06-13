@@ -31,9 +31,10 @@ def build_rag_chain(model_name="llama3"):
                     answer_tokens = []
 
                     for token in token_stream:
-                        token_str = token.strip() if isinstance(token, str) else token.get("content", "").strip()
+                        token_str = token if isinstance(token, str) else token.get("content", "")
                         if not token_str:
                             continue
+
                         answer_tokens.append(token_str)
                         yield token_str
 

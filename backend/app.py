@@ -1,22 +1,30 @@
-import requests
-import json
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
 from rag.rag_chain import build_rag_chain
+from fastapi.middleware.cors import CORSMiddleware
 
-def main():
+app = FastAPI()
+rag_chain = build_rag_chain()
 
-    rag_chain = build_rag_chain()
-    output = rag_chain.invoke({"question": "How old is Xander?"})
+@app.post("/ask")
+async def ask(request: Request):
+    body = await request.json()
+    question = body.get("question", "")
 
-    previous_token = ""
-    for token_chunk in output["stream"]:
+    def token_stream():
+        output = rag_chain.invoke({"question": question})
+        for token in output["stream"]:
+            token_str = token if isinstance(token, str) else token.get("content", "")
+            if not token_str:
+                continue
 
-        if token_chunk.startswith(" ") or token_chunk in ",.?!":
-            print(token_chunk, end="", flush=True)
-        else:
-            if previous_token and not previous_token.endswith(" "):
-                print(" ", end="", flush=True)
-            print(token_chunk, end="", flush=True)
-        previous_token = token_chunk
+            yield token_str
 
-if __name__ == "__main__":
-    main()
+    return StreamingResponse(token_stream(), media_type="text/plain")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

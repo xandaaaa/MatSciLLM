@@ -10,8 +10,6 @@ amount_similar_chunks = 4
 
 # Context Data
 data_path = "./data"
-
-# Vector storage space
 persist_dir = "./vector_store"
 
 def get_retriever():
@@ -21,17 +19,6 @@ def get_retriever():
 
     for file in glob.glob(f"{data_path}/**/*.pdf", recursive=True):
         docs.extend(PyPDFLoader(file).load())
-
-    for file in glob.glob(f"{data_path}/**/*.json", recursive=True):
-        with open(file, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            # Assuming data is a list of dicts with a "text" field
-            for item in data:
-                text = item.get("text", None)
-                if text:
-                    docs.append(Document(page_content=text))
-
-
     # Testing purposes
     for file in glob.glob(f"{data_path}/**/*.txt", recursive=True):
         docs.extend(TextLoader(file).load())
