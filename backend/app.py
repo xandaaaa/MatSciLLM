@@ -3,6 +3,8 @@ from fastapi.responses import StreamingResponse
 from rag.rag_chain import build_rag_chain
 from fastapi.middleware.cors import CORSMiddleware
 
+# Run uvicorn app:app --reload
+
 app = FastAPI()
 rag_chain = build_rag_chain()
 
