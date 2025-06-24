@@ -9,6 +9,7 @@ class Critic:
 
     def build_prompt(self, query: str, docs: List[str], answer: str, iteration: int = 1) -> str:
         doc_text = "\n".join([f"Doc {i+1}: {doc}" for i, doc in enumerate(docs)])
+        
         return f"""
 You are a helpful and thoughtful critique assistant.
 

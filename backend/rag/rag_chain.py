@@ -1,10 +1,10 @@
 from langchain_ollama import OllamaLLM
 from .prompts import prompt
 from .retriever import get_retriever
-from .critic import Critic
 from langchain_core.runnables import Runnable
 
 def build_rag_chain(model_name="llama3"):
+    
     retriever = get_retriever()
     llm = OllamaLLM(model=model_name)
 
@@ -13,7 +13,10 @@ def build_rag_chain(model_name="llama3"):
             question = input_dict["question"]
             docs = retriever.invoke(question)
 
-            context = "\n\n".join([doc.page_content for doc in docs])
+            context = "\n\n".join([
+                f"DOI: {doc.metadata.get('doi', 'Not found')}\n{doc.page_content}"
+                for doc in docs
+            ])
 
             prompt_input = prompt.invoke({
                 "context": context,
