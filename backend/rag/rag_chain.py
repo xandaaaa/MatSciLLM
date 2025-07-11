@@ -4,7 +4,7 @@ from .retriever import get_retriever
 from langchain_core.runnables import Runnable
 
 def build_rag_chain(model_name="llama3"):
-    
+
     retriever = get_retriever()
     llm = OllamaLLM(model=model_name)
 
@@ -19,6 +19,7 @@ def build_rag_chain(model_name="llama3"):
             ])
 
             prompt_input = prompt.invoke({
+                
                 "context": context,
                 "question": question
             })

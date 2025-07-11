@@ -1,7 +1,6 @@
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_ollama.embeddings import OllamaEmbeddings
-from langchain_core.documents import Document
 from langchain_chroma import Chroma
 import glob
 import json
@@ -12,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-amount_similar_chunks = 4
+amount_similar_chunks = 25
 
 # Context Data
 data_path = "./data"
@@ -29,7 +28,7 @@ def load_embedded_files():
 def save_embedded_files(file_paths):
     with open(existing_file, "w") as f:
         json.dump(sorted(list(file_paths)), f, indent=2)
-                
+
 def extract_doi(text):
     match = re.search(doi_regex, text, re.I)
     return match.group(0) if match else None
@@ -58,9 +57,22 @@ def get_retriever():
         for file in glob.glob(f"{data_path}/**/*.txt", recursive=True):
             for doc in TextLoader(file).load():
                 docs.append(doc)
-        
+
+        logger.info("Splitting documents into chunks...")
         splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
-        chunks = splitter.split_documents(docs)
+        logger.info("chunk..")
+        chunks = []
+        for i, doc in enumerate(docs):
+            try:
+                if not doc.page_content.strip():
+                    logger.warning(f"Skipping empty doc {i}: {doc.metadata.get('source', 'unknown')}")
+                    continue
+                doc_chunks = splitter.split_documents([doc])
+                chunks.extend(doc_chunks)
+            except Exception as e:
+                logger.error(f"Error splitting doc {i} ({doc.metadata.get('source', 'unknown')}): {e}")
+
+        logger.info(f"Total chunks created: {len(chunks)}")
 
         vector_store = Chroma.from_documents(
             chunks,
