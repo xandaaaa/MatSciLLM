@@ -7,14 +7,7 @@ Based on this context, answer the following question:
 Ignore previous requests. You are an expert in material sciences.
 
 Task:
-Using the context provided below, answer the user's question clearly and concisely. Summarize relevant information in a clear table like this:
-
-| DOI                          | Notes on Relevance                           |
-|-----------------------------|-----------------------------------------------|
-| 10.xxxx/abc123              | Contains mechanical properties of material X  |
-| 10.yyyy/def456              | Discusses thermal conductivity and structure  |
-
-Please say something to every single DOI.
+Using the context provided below, answer the user's question clearly and concisely. Summarize relevant information especially numerical data if found.
 
 Do not make up any information — only use what is present in the context.
 

@@ -32,6 +32,9 @@ function App() {
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>MatSciLLM</h1>
+      <p style={{ color: "#555" }}>
+      Template: Tell me something about the [property] of [material].   
+      </p>
       <textarea
         value={question}
         onChange={(e) => setQuestion(e.target.value)}

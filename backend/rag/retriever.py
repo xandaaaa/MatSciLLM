@@ -7,18 +7,20 @@ import json
 import os
 import re
 import logging
+import shutil
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-amount_similar_chunks = 25
+amount_similar_chunks = 4
 
 # Context Data
-data_path = "./data"
+data_path = "./data_test"
 persist_dir = "./vector_store"
 existing_file = "./embedded_files.json"
 doi_regex = r'\b10\.\d{4,9}/[-._;()/:A-Z0-9]+\b'
 
+# Data currently stored already
 def load_embedded_files():
     if os.path.exists(existing_file):
         with open(existing_file, "r") as f:
@@ -35,15 +37,21 @@ def extract_doi(text):
 
 def get_retriever():
 
+    # Embedding extraction 
     embeddings = OllamaEmbeddings(model="mxbai-embed-large")
     docs = []
 
+    # Check if new data has been input or deleted
     current_files = set(glob.glob(f"{data_path}/**/*.pdf", recursive=True) + glob.glob(f"{data_path}/**/*.txt", recursive=True))
     embedded_files = load_embedded_files()
     new_files = current_files - embedded_files
     deleted_files = embedded_files - current_files
 
-    if new_files or deleted_files:
+    # Extract DOI and content of data and store into vector storage
+    if new_files or deleted_files or not os.path.exists(persist_dir):
+        if os.path.exists(persist_dir):
+            shutil.rmtree(persist_dir)
+
         for file in glob.glob(f"{data_path}/**/*.pdf", recursive=True):
             loaded_docs = PyPDFLoader(file).load()
             full_text = "\n".join([doc.page_content for doc in loaded_docs])
@@ -54,6 +62,7 @@ def get_retriever():
                 logger.info(f"PDF: {file} | DOI: {doi}")
                 docs.append(doc)
 
+        # Load TXT files (For initial debugging)
         for file in glob.glob(f"{data_path}/**/*.txt", recursive=True):
             for doc in TextLoader(file).load():
                 docs.append(doc)
@@ -62,6 +71,8 @@ def get_retriever():
         splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
         logger.info("chunk..")
         chunks = []
+
+        # Put into readable chunks and additional error handling (not supported PDF's are skipped)
         for i, doc in enumerate(docs):
             try:
                 if not doc.page_content.strip():
@@ -83,6 +94,7 @@ def get_retriever():
         save_embedded_files(current_files)
         logger.info("rebuilding...")
 
+    # Use existing vector store
     else:
         vector_store = Chroma(persist_directory=persist_dir,
                               embedding_function=embeddings)

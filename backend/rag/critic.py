@@ -2,7 +2,6 @@ from typing import List, Dict, Any
 import json
 from langchain_ollama import OllamaLLM
 
-
 class Critic:
     def __init__(self, model: str = "mistral", temperature: float = 0.3):
         self.llm = OllamaLLM(model=model, temperature=temperature)

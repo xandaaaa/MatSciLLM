@@ -2,6 +2,10 @@ from langchain_ollama import OllamaLLM
 from .prompts import prompt
 from .retriever import get_retriever
 from langchain_core.runnables import Runnable
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 def build_rag_chain(model_name="llama3"):
 
@@ -11,53 +15,47 @@ def build_rag_chain(model_name="llama3"):
     class RAGChainRunnable(Runnable):
         def invoke(self, input_dict):
             question = input_dict["question"]
-            docs = retriever.invoke(question)
 
-            context = "\n\n".join([
-                f"DOI: {doc.metadata.get('doi', 'Not found')}\n{doc.page_content}"
-                for doc in docs
-            ])
+            vector_store = retriever.vectorstore
+            all_metadatas = vector_store.get(include=["metadatas"])["metadatas"]
+            all_dois = set(meta.get("doi") for meta in all_metadatas if meta.get("doi"))
+            logger.info(f"all DOIs: {all_dois}")
 
-            prompt_input = prompt.invoke({
-                
-                "context": context,
-                "question": question
-            })
+            amount_similar_chunks = 3
 
-            results = []
-            best_output = None
+            def generate_all_answers():
+                for doi in all_dois:
+                    filtered_retriever = vector_store.as_retriever(
+                        search_kwargs={
+                            "k": amount_similar_chunks,
+                            "filter": {"doi": doi}
+                        }
+                    )
 
-            def generate_answer():
-                nonlocal best_output
+                    docs = filtered_retriever.invoke(question)
 
-                try:
+                    context = "\n\n".join([
+                        f"DOI: {doc.metadata.get('doi', 'Not found')}\n{doc.page_content}"
+                        for doc in docs
+                    ])
+
+                    prompt_input = prompt.invoke({
+                        "context": context,
+                        "question": question
+                    })
+
+                    yield f"\n\n=== Answer for DOI: {doi} ===\n\n"
+
                     token_stream = llm.stream(prompt_input)
-                    answer_tokens = []
-
                     for token in token_stream:
                         token_str = token if isinstance(token, str) else token.get("content", "")
-                        if not token_str:
-                            continue
-
-                        answer_tokens.append(token_str)
-                        yield token_str
+                        if token_str:
+                            yield token_str
 
                     yield "\n\n"
-
-                except Exception as stream_err:
-                    print(f"Error during streaming: {stream_err}")
-                    yield f"[Stream error: {stream_err}]\n\n"
-
-                answer = "".join(answer_tokens).strip()
-                results.append({"answer": answer})
-                best_output = answer
-
             return {
                 "question": question,
-                "used_documents": [doc.page_content for doc in docs],
-                "iterations": results,
-                "final_answer": best_output,
-                "stream": generate_answer()
+                "stream": generate_all_answers()
             }
 
     return RAGChainRunnable()
