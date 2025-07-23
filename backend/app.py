@@ -10,6 +10,7 @@ app = FastAPI()
 rag_chain_ask = build_rag_chain()
 rag_summarizer = build_rag_summarizer()
 
+# First Tab (Ask Question)
 @app.post("/ask")
 async def ask(request: Request):
     body = await request.json()
@@ -26,6 +27,7 @@ async def ask(request: Request):
 
     return StreamingResponse(token_stream(), media_type="text/plain")
 
+# Second Tab (Summarize every PDF)
 @app.post("/summarizer")
 async def summarize_text(request: Request):
     body = await request.json()
@@ -41,6 +43,8 @@ async def summarize_text(request: Request):
             yield token_str
 
     return StreamingResponse(token_stream(), media_type="text/plain")
+
+# TODO THIRD TAB
 
 app.add_middleware(
     CORSMiddleware,
