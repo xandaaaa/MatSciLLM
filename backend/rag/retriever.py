@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 amount_similar_chunks = 4
 
 # Context Data
-data_path = "./data_test"
+data_path = "./data"
 persist_dir = "./vector_store"
 existing_file = "./embedded_files.json"
 doi_regex = r'\b10\.\d{4,9}/[-._;()/:A-Z0-9]+\b'

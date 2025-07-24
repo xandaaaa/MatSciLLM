@@ -6,6 +6,8 @@ function App() {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
 
+
+  // For specific questions in all submitted PDFs
   const handleAsk = async () => {
     setResponse("");
     setLoading(true);
@@ -30,6 +32,7 @@ function App() {
     setLoading(false);
   };
 
+  // Information for every PDF
   const handleSummarize = async () => {
     setResponse("");
     setLoading(true);
@@ -55,26 +58,26 @@ function App() {
   };
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
+    <div className="app-container">
       <h1>MatSciLLM</h1>
 
       {/* Tab Buttons */}
-      <div style={{ marginBottom: "1rem" }}>
+      <div className="tab-buttons">
         <button
           onClick={() => setActiveTab("ask")}
-          style={{ marginRight: "1rem", fontWeight: activeTab === "ask" ? "bold" : "normal" }}
+          className={activeTab === "ask" ? "active" : "inactive"}
         >
-          Ask LLM
+          Specific Question
         </button>
         <button
           onClick={() => setActiveTab("summarizer")}
-          style={{ marginRight: "1rem", fontWeight: activeTab === "summarizer" ? "bold" : "normal" }}
+          className={activeTab === "summarizer" ? "active" : "inactive"}
         >
-          Summarize LLM
+          Every PDF
         </button>
         <button
           onClick={() => setActiveTab("third")}
-          style={{ fontWeight: activeTab === "third" ? "bold" : "normal" }}
+          className={activeTab === "third" ? "active" : "inactive"}
         >
           Placeholder
         </button>
@@ -83,7 +86,7 @@ function App() {
       {/* Tab Contents */}
       {activeTab === "ask" && (
         <>
-          <p style={{ color: "#555" }}>
+          <p className="instructions">
             Template: Tell me something about the [property] of [material].
           </p>
           <textarea
@@ -91,39 +94,39 @@ function App() {
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Type your question..."
             rows={3}
-            style={{ width: "100%", fontSize: "1rem" }}
+            className="textarea"
           />
           <br />
-          <button onClick={handleAsk} disabled={loading} style={{ marginTop: "1rem" }}>
+          <button onClick={handleAsk} disabled={loading} className="button">
             {loading ? "Asking..." : "Ask"}
           </button>
-          <pre style={{ whiteSpace: "pre-wrap", marginTop: "1rem" }}>{response}</pre>
+          <pre className="response">{response}</pre>
         </>
       )}
 
       {activeTab === "summarizer" && (
         <>
-          <p style={{ color: "#555" }}>
-            Enter a topic to get a summary from the vector store.
+          <p className="instructions">
+            Enter a topic to get a summary of your question for every PDF.
           </p>
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Type your topic..."
+            placeholder="Type your question..."
             rows={3}
-            style={{ width: "100%", fontSize: "1rem" }}
+            className="textarea"
           />
           <br />
-          <button onClick={handleSummarize} disabled={loading} style={{ marginTop: "1rem" }}>
-            {loading ? "Summarizing..." : "Summarize"}
+          <button onClick={handleSummarize} disabled={loading} className="button">
+            {loading ? "Asking..." : "Ask"}
           </button>
-          <pre style={{ whiteSpace: "pre-wrap", marginTop: "1rem" }}>{response}</pre>
+          <pre className="response">{response}</pre>
         </>
       )}
 
       {activeTab === "third" && (
         <div>
-          <p>Hi.</p>
+          <p>Placeholder.</p>
         </div>
       )}
     </div>

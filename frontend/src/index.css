@@ -54,6 +54,47 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* index.css */
+
+.app-container {
+  padding: 2rem;
+  font-family: sans-serif;
+}
+
+.tab-buttons {
+  margin-bottom: 1rem;
+}
+
+.tab-buttons button {
+  margin-right: 1rem;
+}
+
+.tab-buttons button.active {
+  font-weight: bold;
+}
+
+.tab-buttons button.inactive {
+  font-weight: normal;
+}
+
+.instructions {
+  color: #555;
+}
+
+.textarea {
+  width: 100%;
+  font-size: 1rem;
+}
+
+.button {
+  margin-top: 1rem;
+}
+
+.response {
+  white-space: pre-wrap;
+  margin-top: 1rem;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
