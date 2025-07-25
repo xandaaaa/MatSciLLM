@@ -13,6 +13,40 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
+/* Ensure full height layout */
+html, body, #root, .app-container {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Flex layout for app */
+.app-container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  padding: 1rem;
+}
+
+/* Title and Tabs */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 15rem;
+  padding-left: 2rem;
+}
+
+/* Text box and output */ 
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center; 
+  padding-bottom: 2rem; 
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -22,19 +56,15 @@ a:hover {
   color: #535bf2;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
 h1 {
-  font-size: 3.2em;
+  font-size: 3em;
   line-height: 1.1;
+  margin: 0;
+  align-self: flex-start;
+  color: rgb(37, 70, 105);
 }
 
+/* General buttons settings */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -49,50 +79,160 @@ button {
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* index.css */
-
-.app-container {
-  padding: 2rem;
-  font-family: sans-serif;
-}
-
+/* TAB Buttons */
 .tab-buttons {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .tab-buttons button {
-  margin-right: 1rem;
+  padding: 0.45rem 1rem;
+  margin-right: 0;          
+  width: 11rem;   
+
+  border: 2px solid black;
+  border-radius: 999px;
+  background-color: white;
+  color: black;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tab-buttons button:hover {
+  background-color: rgb(37, 70, 105);
+  color: white;
 }
 
 .tab-buttons button.active {
   font-weight: bold;
+  border: 2px solid rgb(37, 70, 105); 
+  border-radius: 999px; 
+  background-color: white;
+  color: rgb(37, 70, 105);
 }
 
 .tab-buttons button.inactive {
   font-weight: normal;
 }
 
+/* Template Instructions */
 .instructions {
   color: #555;
 }
 
+/* Chatbox area */
+.chatbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  gap: 1rem;
+  margin-top: auto;
+  padding-bottom: 1rem;
+  width: 1000px;
+}
+.textarea-container {
+  position: relative;
+  width: 100%;
+  max-width: 1000px; 
+}
+
 .textarea {
   width: 100%;
+  padding: 0.5rem 7rem 0.5rem 0.5rem;
   font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  resize: none;
 }
 
 .button {
-  margin-top: 1rem;
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.7rem;
+  height: calc(1.5em + 1rem);
+  padding: 0 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: rgb(37, 70, 105);
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  z-index: 1;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .response {
+  width: 100%;
+  max-width: 1000px;
+  height: 500px;
+  background-color: #f5f5f5;
+  padding: 0.75rem;
+  border-radius: 8px;
   white-space: pre-wrap;
-  margin-top: 1rem;
+  word-wrap: break-word;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* PDF Stuff */ 
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.pdf-list {
+  width: 100%;
+  max-width: 600px;
+  height: 320px; 
+  overflow-y: auto; 
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin-top: 2rem;
+}
+
+.pdf-item {
+  font-size: 0.95rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.pdf-item:last-child {
+  border-bottom: none;
+}
+
+.pdf-placeholder {
+  color: black;
+  font-style: italic;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (prefers-color-scheme: light) {
