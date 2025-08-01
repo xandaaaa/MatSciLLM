@@ -7,6 +7,7 @@ import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+# Tab 2
 def build_rag_summarizer(model_name="llama3"):
 
     retriever = get_retriever()

@@ -13,7 +13,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 /* Ensure full height layout */
 html, body, #root, .app-container {
   height: 100%;

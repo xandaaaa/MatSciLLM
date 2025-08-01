@@ -3,6 +3,7 @@ from .prompts import prompt
 from .retriever import get_retriever
 from langchain_core.runnables import Runnable
 
+# Tab 1
 def build_rag_chain(model_name="llama3"):
 
     # Retrieve vector store
