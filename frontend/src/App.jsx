@@ -178,7 +178,9 @@ function App() {
           {activeTab === "ask" && (
             <>
               <p className="instructions">
-              Template: Tell me something about the [property] of [material].
+                <span className="highlight">Searches all uploaded PDFs and returns the most relevant Information found.</span>
+                <br />
+                Template: What is the [property] of [material].
               </p>
               <pre className="response">{response}</pre>
               <div className="textarea-container">
@@ -200,7 +202,9 @@ function App() {
           {activeTab === "summarizer" && (
             <>
               <p className="instructions">
-                Enter a topic to get a summary of your question for every PDF.
+                <span className="highlight">Gives an answer to every PDF uploaded.</span>
+                <br />
+                Template: What is the [property] of [material].
               </p>
               <pre className="response">{response}</pre>
               <div className="textarea-container">

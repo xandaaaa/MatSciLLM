@@ -1,5 +1,5 @@
 from langchain_ollama import OllamaLLM
-from .prompts import prompt
+from .prompts import prompt_sum
 from .retriever import get_retriever
 from langchain_core.runnables import Runnable
 import logging
@@ -40,7 +40,7 @@ def build_rag_summarizer(model_name="llama3"):
                         for doc in docs
                     ])
 
-                    prompt_input = prompt.invoke({
+                    prompt_input = prompt_sum.invoke({
                         "context": context,
                         "question": question
                     })
