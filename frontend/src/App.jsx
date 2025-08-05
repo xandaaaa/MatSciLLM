@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function App() {
   const [activeTab, setActiveTab] = useState("ask");
@@ -18,13 +18,10 @@ function App() {
   }, []);
 
   // Upload PDFs
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setSelectedFiles(files);
-    setPdfList(files.map((file) => file.name));
-  };
+  const fileInputRef = useRef(null);
 
-  const handleUpload = async () => {
+  const handleFileSelect = async (e) => {
+    const selectedFiles = Array.from(e.target.files);
     if (!selectedFiles || selectedFiles.length === 0) return;
 
     const formData = new FormData();
@@ -40,6 +37,7 @@ function App() {
 
       if (res.ok) {
         alert("Upload successful!");
+        window.location.reload();
       } else {
         alert("Upload failed.");
       }
@@ -47,6 +45,10 @@ function App() {
       alert("Error uploading files.");
       console.error(error);
     }
+  };
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
   };
 
   // Tab 1: For specific questions in all submitted PDFs
@@ -139,16 +141,32 @@ function App() {
             </div>
 
             <div className="button-row">
-              <button onClick={() => {
+              <button onClick={async () => {
                 setSelectedFiles(null);
                 setPdfList([]);
+                try {
+                  const response = await fetch("http://localhost:8000/clearpdfs", {
+                    method: "POST",
+                  });
+                  if (!response.ok) {
+                    console.error("Failed to delete files");
+                  }
+                } catch (err) {
+                  console.error("Error deleting PDFs:", err);
+                }
               }}>
                 Clear
               </button>
 
-            <button onClick={handleUpload}>
-              Add
-            </button>
+            <button onClick={handleButtonClick}>Add</button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept=".pdf"
+              multiple
+              onChange={handleFileSelect}
+            />
             </div>
           </div>
         </div>
@@ -204,7 +222,7 @@ function App() {
           {activeTab === "third" && (
             <>
               <p className="instructions">
-                Enter a topic to get a placeholder response.
+                Placeholder.
               </p>
               <pre className="response">This is a placeholder response.</pre>
               <div className="textarea-container">

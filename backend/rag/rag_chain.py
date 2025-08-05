@@ -1,5 +1,5 @@
 from langchain_ollama import OllamaLLM
-from .prompts import prompt
+from .prompts import prompt_ask
 from .retriever import get_retriever
 from langchain_core.runnables import Runnable
 
@@ -20,7 +20,7 @@ def build_rag_chain(model_name="llama3"):
                 for doc in docs
             ])
 
-            prompt_input = prompt.invoke({
+            prompt_input = prompt_ask.invoke({
                 "context": context,
                 "question": question
             })

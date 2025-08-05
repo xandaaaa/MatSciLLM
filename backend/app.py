@@ -6,12 +6,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import shutil
 import os
+import glob
 
 # Run: uvicorn app:app --reload
 
 app = FastAPI()
-rag_chain_ask = build_rag_chain()
-rag_summarizer = build_rag_summarizer()
+rag_chain_ask = None
+rag_summarizer = None
 
 # Get all pdfs that currently exist in the folder
 @app.get("/getpdfs")
@@ -23,6 +24,27 @@ def list_pdfs():
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 
+# Delete all PDFs
+@app.post("/clearpdfs")
+def clear_pdfs():
+    folder_path = "data"
+
+    pdf_files = glob.glob(os.path.join(folder_path, "*.pdf"))
+    deleted_files = []
+
+    for file_path in pdf_files:
+        try:
+            os.remove(file_path)
+            deleted_files.append(file_path)
+        except Exception as e:
+            print(f"Error deleting {file_path}: {e}")
+
+    # Refresh backend (Provisionally)
+    path_to_touch = "app.py" 
+    os.utime(path_to_touch, None)
+
+    return {"deleted": deleted_files}
+
 # Upload PDF to data path
 @app.post("/upload")
 async def upload_pdfs(pdfs: List[UploadFile] = File(...)):
@@ -30,11 +52,21 @@ async def upload_pdfs(pdfs: List[UploadFile] = File(...)):
         dest = os.path.join("data", pdf.filename)
         with open(dest, "wb") as buffer:
             shutil.copyfileobj(pdf.file, buffer)
+
+    # Refresh backend (Provisionally)
+    path_to_touch = "app.py" 
+    os.utime(path_to_touch, None)
+
     return {"message": "Uploaded", "files": [pdf.filename for pdf in pdfs]}
 
 # First Tab (Ask Question)
 @app.post("/ask")
 async def ask(request: Request):
+
+    global rag_chain_ask
+    if rag_chain_ask is None:
+        rag_chain_ask = build_rag_chain()
+
     body = await request.json()
     question = body.get("question", "")
 
@@ -52,6 +84,11 @@ async def ask(request: Request):
 # Second Tab (Summarize every PDF)
 @app.post("/summarizer")
 async def summarize_text(request: Request):
+
+    global rag_summarizer
+    if rag_summarizer is None:
+        rag_summarizer = build_rag_summarizer()
+
     body = await request.json()
     question = body.get("question", "")
 
