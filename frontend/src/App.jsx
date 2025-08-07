@@ -3,11 +3,12 @@ import { useState, useEffect, useRef } from "react";
 function App() {
   const [activeTab, setActiveTab] = useState("ask");
   const [question, setQuestion] = useState("");
-  const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState(null);
   const [pdfList, setPdfList] = useState([]);
+  const [history, setHistory] = useState([]);
+  const responseRef = useRef(null);
 
+  // Display all current PDFs
   useEffect(() => {
   fetch("http://localhost:8000/getpdfs")
     .then(res => res.json())
@@ -16,6 +17,17 @@ function App() {
     })
     .catch(err => console.error("Failed to fetch PDFs:", err));
   }, []);
+
+  // Scroll down automatically
+  useEffect(() => {
+    const el = responseRef.current;
+    if (!el) return;
+
+    const isOverflowing = el.scrollHeight > el.clientHeight;
+    if (isOverflowing) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [history, activeTab]);
 
   // Upload PDFs
   const fileInputRef = useRef(null);
@@ -53,14 +65,20 @@ function App() {
 
   // Tab 1: For specific questions in all submitted PDFs
   const handleAsk = async () => {
-    setResponse("");
+    if (!question.trim()) return;
+
     setLoading(true);
+    const currentQuestion = question;
+    setQuestion("");
+
+    // Add empty response entry first
+    setHistory((prev) => [...prev, { question: currentQuestion, response: "" }]);
+    const index = history.length; // the index where the new entry will be
+
     const res = await fetch("http://localhost:8000/ask", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ question }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: currentQuestion }),
     });
 
     const reader = res.body.getReader();
@@ -70,7 +88,16 @@ function App() {
       const { done, value } = await reader.read();
       if (done) break;
       const chunk = decoder.decode(value, { stream: true });
-      setResponse((prev) => prev + chunk);
+
+      // Update response in the correct entry
+      setHistory((prev) => {
+        const updated = [...prev];
+        updated[index] = {
+          ...updated[index],
+          response: updated[index].response + chunk,
+        };
+        return updated;
+      });
     }
 
     setLoading(false);
@@ -78,14 +105,20 @@ function App() {
 
   // Tab 2: Information for every PDF
   const handleSummarize = async () => {
-    setResponse("");
+    if (!question.trim()) return;
+
     setLoading(true);
+    const currentQuestion = question;
+    setQuestion("");
+
+    // Add empty response entry first
+    setHistory((prev) => [...prev, { question: currentQuestion, response: "" }]);
+    const index = history.length; // the index where the new entry will be
+
     const res = await fetch("http://localhost:8000/summarizer", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ question }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: currentQuestion }),
     });
 
     const reader = res.body.getReader();
@@ -95,12 +128,23 @@ function App() {
       const { done, value } = await reader.read();
       if (done) break;
       const chunk = decoder.decode(value, { stream: true });
-      setResponse((prev) => prev + chunk);
+
+      // Update response in the correct entry
+      setHistory((prev) => {
+        const updated = [...prev];
+        updated[index] = {
+          ...updated[index],
+          response: updated[index].response + chunk,
+        };
+        return updated;
+      });
     }
 
     setLoading(false);
   };
+  
 
+  // Frontend Design
   return (
     <div className="app-container">
       <div className="sidebar">
@@ -142,7 +186,6 @@ function App() {
 
             <div className="button-row">
               <button onClick={async () => {
-                setSelectedFiles(null);
                 setPdfList([]);
                 try {
                   const response = await fetch("http://localhost:8000/clearpdfs", {
@@ -172,8 +215,8 @@ function App() {
         </div>
 
       <div className="main-content">
-
         <div className="chatbox">
+
           {/* Tab 1 */}
           {activeTab === "ask" && (
             <>
@@ -182,7 +225,18 @@ function App() {
                 <br />
                 Template: What is the [property] of [material].
               </p>
-              <pre className="response">{response}</pre>
+
+              {/* Chat "bubbles" */}
+              <div className="response" ref={responseRef}>
+              {history.map((entry, idx) => (
+                <div key={idx} className="qa-pair">
+                  <div className="user-question">{entry.question}</div>
+                  <div className="ai-response">{entry.response}</div>
+                </div>
+              ))}
+            </div>
+
+              {/* Type question box */}
               <div className="textarea-container">
                 <textarea
                   value={question}
@@ -190,6 +244,12 @@ function App() {
                   placeholder="Type your question..."
                   rows={3}
                   className="textarea"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault(); 
+                      handleAsk();        
+                    }
+                  }}
                 />
                 <button onClick={handleAsk} disabled={loading} className="button">
                   {loading ? "Asking..." : "Ask"}
@@ -206,7 +266,18 @@ function App() {
                 <br />
                 Template: What is the [property] of [material].
               </p>
-              <pre className="response">{response}</pre>
+              
+              {/* Chat "bubbles" */}
+              <div className="response" ref={responseRef}>
+              {history.map((entry, idx) => (
+                <div key={idx} className="qa-pair">
+                  <div className="user-question">{entry.question}</div>
+                  <div className="ai-response">{entry.response}</div>
+                </div>
+              ))}
+            </div>
+
+              {/* Type question box */}
               <div className="textarea-container">
                 <textarea
                   value={question}
@@ -214,6 +285,12 @@ function App() {
                   placeholder="Type your question..."
                   rows={3}
                   className="textarea"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault(); 
+                      handleSummarize();        
+                    }
+                  }}
                 />
                 <button onClick={handleSummarize} disabled={loading} className="button">
                   {loading ? "Asking..." : "Ask"}

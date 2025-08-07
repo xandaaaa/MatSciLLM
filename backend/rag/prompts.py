@@ -30,6 +30,8 @@ Using the context provided below, answer the user's question clearly and concise
 
 Do not make up any information — only use what is present in the context.
 
+If no related information is found simply output "No Information found".
+
 Here are relevant context snippets (each snippet may include a DOI):
 {context}
 
