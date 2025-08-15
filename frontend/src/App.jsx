@@ -6,7 +6,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [pdfList, setPdfList] = useState([]);
   const [history, setHistory] = useState([]);
+  const [dbOutput, setDbOutput] = useState("");
+  const [materialName, setMaterialName] = useState("");
   const responseRef = useRef(null);
+  const dbResponseRef = useRef(null);
 
   // Display all current PDFs
   useEffect(() => {
@@ -28,6 +31,12 @@ function App() {
       el.scrollTop = el.scrollHeight;
     }
   }, [history, activeTab]);
+
+  useEffect(() => {
+    const el = dbResponseRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [dbOutput]);
 
   // Upload PDFs
   const fileInputRef = useRef(null);
@@ -142,6 +151,27 @@ function App() {
 
     setLoading(false);
   };
+
+  // Tab 3: Database Access
+
+  const fetchCompositions = async (matName) => {
+    if (!matName) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:8000/get_db", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: matName,
+      });
+      const data = await res.text();
+      setDbOutput(data);
+    } catch (err) {
+      setDbOutput("Error fetching data: " + err.message);
+    }
+    setMaterialName("")
+    setLoading(false);
+  };
   
 
   // Frontend Design
@@ -165,10 +195,10 @@ function App() {
               Every PDF
             </button>
             <button
-              onClick={() => setActiveTab("third")}
-              className={activeTab === "third" ? "active" : "inactive"}
+              onClick={() => setActiveTab("DB")}
+              className={activeTab === "DB" ? "active" : "inactive"}
             >
-              Placeholder
+              Database Access
             </button>
           </div>
           
@@ -300,21 +330,37 @@ function App() {
           )}
 
           {/* Tab 3 */}
-          {activeTab === "third" && (
+          {activeTab === "DB" && (
             <>
               <p className="instructions">
-                Placeholder.
+                <span className="highlight">Database Access to find unique compositions of given element.</span>
+                <br />
+                Template: Oxygen.
               </p>
-              <pre className="response">This is a placeholder response.</pre>
+              <div
+                className="response"
+                ref={dbResponseRef}
+                style={{ whiteSpace: "pre-wrap" }}
+              >
+                {dbOutput}
+              </div>
               <div className="textarea-container">
                 <textarea
-                  placeholder="Type your topic..."
+                  placeholder="Enter your material..."
                   rows={3}
                   className="textarea"
+                  value={materialName}
+                  onChange={(e) => setMaterialName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      fetchCompositions(materialName)
+                    }
+                  }}
                 />
-                <button disabled className="button">
-                  Placeholder
-                </button>
+              <button onClick={() => fetchCompositions(materialName)} disabled={loading} className="button">
+                {loading ? "Asking..." : "Ask"}
+              </button>
               </div>
             </>
           )}

@@ -7,6 +7,9 @@ from typing import List
 import shutil
 import os
 import glob
+from scraper.scraper import get_all_compositions
+from fastapi.responses import PlainTextResponse
+
 
 # Run: uvicorn app:app --reload
 
@@ -103,8 +106,23 @@ async def summarize_text(request: Request):
 
     return StreamingResponse(token_stream(), media_type="text/plain")
 
-# TODO THIRD TAB
+# Third Tab get from DB
+@app.post("/get_db")
+async def get_db(request: Request):
+    mat_name = (await request.body()).decode("utf-8")
 
+    print(f"Received mat_name: {mat_name}")
+
+    if not mat_name:
+        return PlainTextResponse("Error: Material is required", status_code=400)
+
+    try:
+        output = get_all_compositions(mat_name)
+        return PlainTextResponse(output)
+    except Exception as e:
+        return PlainTextResponse(f"Error: {str(e)}", status_code=500)
+
+# misc
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
