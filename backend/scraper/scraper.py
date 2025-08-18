@@ -1,9 +1,11 @@
 from mp_api.client import MPRester
 import subprocess
 import json
-import re
+from dotenv import load_dotenv
+import os
 
-API_KEY = "UCujxCK3G6PP9VEiJlf9gjFlNMx4U15Z"
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 def llm_extract_element(mat_name, LLM_MODEL="llama3"):
     prompt_str = f"""
