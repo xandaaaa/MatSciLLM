@@ -9,7 +9,7 @@ import os
 import glob
 from scraper.scraper import get_all_compositions
 from fastapi.responses import PlainTextResponse
-
+from fastapi.staticfiles import StaticFiles
 
 # Run: uvicorn app:app --reload
 
