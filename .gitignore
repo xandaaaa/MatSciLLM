@@ -163,3 +163,4 @@ cython_debug/
 backend/data/*.pdf
 backend/*.json
 backend/vector_store
+backend/data_test
