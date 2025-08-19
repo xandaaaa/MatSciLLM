@@ -1,8 +1,8 @@
-build:
-	docker-compose build
+install:
+	cd backend && pip install -r requirements.txt
+	cd frontend && npm install
+	npm install -g serve
 
-up:
-	docker-compose up
-
-down:
-	docker-compose down
+run:
+	cd frontend && npm run build && serve -s dist &
+	cd backend && uvicorn app:app --reload

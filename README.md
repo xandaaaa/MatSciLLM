@@ -16,9 +16,9 @@
 
 ## Setup
 
-This repository includes a Docker setup, which can be conveniently accessed using the provided Makefile.
+This repository includes Makefile for easy installation.
 
-> **Note:** Make sure Docker and Make are installed.
+> **Note:** Make sure Make is installed and Ollama (llama3:latest) is running.
 
 1. **Add API Key**  
    Insert your [Materials Project API key](https://next-gen.materialsproject.org/api) into the `.env.example` file. This key is required for accessing the Materials Project API.
@@ -29,24 +29,24 @@ This repository includes a Docker setup, which can be conveniently accessed usin
     cp .env.example .env
     ```
 
-3. **Build Docker Image**  
-   Use the provided Makefile to build the Docker image.
+3. **Install dependencies**  
+   Use the provided Makefile to install dependencies.
+   > **Note:** For Python, it’s recommended to create and activate a virtual environment before running this.  
    ```bash 
-   make build
+   make install
    ```
 
-4. **Run Docker Container**  
-   Start the project in a Docker container using the Makefile.
+4. **Run application**  
+   Start the application using the Makefile, then open the application at the specified localhost address.
    ```bash 
-   make up
-   ```
-
-5. **Stop Docker Container**  
-   When finished, stop the Docker container.
-   ```bash
-   make down
+   make run
    ```
 
     &nbsp;
 
-> Alternatively, you can manage and run the container directly through the Docker Desktop app after building the image.
+> Notes: 
+> - To stop the application, press `Ctrl + C` in the terminal.
+> - Alternatively, you can use a different LLM model by changing the `model_name` parameter in the following functions:
+>   - `backend/dbMP.py` → `llm_extract_element(LLM_MODEL=...)`
+>   - `backend/rag_chain.py` → `build_rag_chain(model_name=...)`
+>   - `backend/rag_summarizer.py` → `build_rag_summarizer(model_name=...)`

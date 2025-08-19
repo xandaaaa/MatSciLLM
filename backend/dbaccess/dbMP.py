@@ -9,7 +9,7 @@ import os
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
-def llm_extract_element(mat_name, LLM_MODEL="llama3"):
+def llm_extract_element(mat_name, model_name="llama3"):
     prompt_str = f"""
     Return ONLY a flat JSON array of chemical element symbols for the following material.
     - Format: ["O"], all symbols must be strings.
@@ -29,7 +29,7 @@ def llm_extract_element(mat_name, LLM_MODEL="llama3"):
 
     # Call LLM
     result = subprocess.run(
-        ["ollama", "run", LLM_MODEL, prompt_str],
+        ["ollama", "run", model_name, prompt_str],
         capture_output=True,    
         text=True
     )
