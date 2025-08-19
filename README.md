@@ -2,6 +2,8 @@
 
 **MatSciLLM** is primarly an LLM-based application designed for material science research, enabling content extraction and analysis from PDFs along with access to the [Materials Project](https://materialsproject.org) Database.
 
+![MatSciLLM interface](img/MatscillmSS.png)
+
 ## Features
 
 - **User Interface** - User-friendly chat interface with convenient PDF management.
@@ -16,7 +18,7 @@
 
 This repository includes a Docker setup, which can be conveniently accessed using the provided Makefile.
 
-> **Note:** Make sure Docker is installed.
+> **Note:** Make sure Docker and Make are installed.
 
 1. **Add API Key**  
    Insert your [Materials Project API key](https://next-gen.materialsproject.org/api) into the `.env.example` file. This key is required for accessing the Materials Project API.
