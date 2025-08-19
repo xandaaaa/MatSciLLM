@@ -22,8 +22,6 @@ This repository includes Makefile for easy installation.
 
 - [Ollama](https://ollama.com/)
 
-    &nbsp;
-
 1. **Clone Repository** 
     ```bash 
     git clone https://github.com/xandaaaa/MatSciLLM.git
@@ -56,6 +54,7 @@ This repository includes Makefile for easy installation.
 
 > Notes: 
 > - To stop the application, press `Ctrl + C` in the terminal.
+> - The default LLM model is `llama3:latest`.
 > - Alternatively, you can use a different LLM model by changing the `model_name` parameter in the following functions:
 >   - `backend/dbMP.py` → `llm_extract_element(model_name=...)`
 >   - `backend/rag_chain.py` → `build_rag_chain(model_name=...)`
