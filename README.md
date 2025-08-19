@@ -18,25 +18,35 @@
 
 This repository includes Makefile for easy installation.
 
-> **Note:** Make sure Make is installed and Ollama (llama3:latest) is running.
+**Prerequisite**
 
-1. **Add API Key**  
+- [Ollama](https://ollama.com/)
+
+    &nbsp;
+
+1. **Clone Repository** 
+    ```bash 
+    git clone https://github.com/xandaaaa/MatSciLLM.git
+    cd MatSciLLM
+    ```
+
+2. **Add API Key**  
    Insert your [Materials Project API key](https://next-gen.materialsproject.org/api) into the `.env.example` file. This key is required for accessing the Materials Project API.
 
-2. **Create `.env` File**  
+3. **Create `.env` File**  
    Copy `.env.example` to `.env` to set up environment variables. 
     ```bash 
     cp .env.example .env
     ```
 
-3. **Install dependencies**  
+4. **Install dependencies**  
    Use the provided Makefile to install dependencies.
    > **Note:** For Python, it’s recommended to create and activate a virtual environment before running this.  
    ```bash 
    make install
    ```
 
-4. **Run application**  
+5. **Run application**  
    Start the application using the Makefile, then open the application at the specified localhost address.
    ```bash 
    make run
