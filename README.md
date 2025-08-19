@@ -47,6 +47,6 @@ This repository includes Makefile for easy installation.
 > Notes: 
 > - To stop the application, press `Ctrl + C` in the terminal.
 > - Alternatively, you can use a different LLM model by changing the `model_name` parameter in the following functions:
->   - `backend/dbMP.py` → `llm_extract_element(LLM_MODEL=...)`
+>   - `backend/dbMP.py` → `llm_extract_element(model_name=...)`
 >   - `backend/rag_chain.py` → `build_rag_chain(model_name=...)`
 >   - `backend/rag_summarizer.py` → `build_rag_summarizer(model_name=...)`
