@@ -4,6 +4,8 @@ import json
 from dotenv import load_dotenv
 import os
 
+# Accesses Materials Project (MP) using API KEY
+
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
 

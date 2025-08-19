@@ -7,9 +7,8 @@ from typing import List
 import shutil
 import os
 import glob
-from scraper.scraper import get_all_compositions
+from dbaccess.dbMP import get_all_compositions
 from fastapi.responses import PlainTextResponse
-from fastapi.staticfiles import StaticFiles
 
 # Run: uvicorn app:app --reload
 
